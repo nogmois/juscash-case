@@ -1,0 +1,27 @@
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
+
+# Ambientes virtuais Python genéricos
+**/venv/
+**/.env
+.venv/
+
+# Node (caso algum node_modules fique no root)
+**/node_modules/
+
+# Logs em geral
+*.log
+
+# Arquivos Docker
+docker-compose.override.yml
+.env
+
+# IDEs
+.vscode/
+.idea/
+
+# Caches e cobertura
+**/.pytest_cache/
+**/.mypy_cache/
+**/coverage/

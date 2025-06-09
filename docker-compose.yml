@@ -1,0 +1,71 @@
+services:
+  db:
+    image: postgres:13-alpine
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: ${DB_NAME}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - juscash-net
+
+  backend:
+    build:
+      context: ./backend-api
+    image: juscash_backend:latest
+    ports:
+      - "3000:3000"
+    environment:
+      DB_HOST: db
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      JWT_SECRET: ${JWT_SECRET}
+      PORT: 3000
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: on-failure
+    networks:
+      - juscash-net
+
+  scraper:
+    build:
+      context: ./tjsp-scraper
+    image: juscash_scraper:latest
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: on-failure
+    networks:
+      - juscash-net
+
+  frontend:
+    build:
+      context: ./juscash-frontend
+    image: juscash_frontend:latest
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_URL: http://localhost:3000
+    depends_on:
+      backend:
+        condition: service_started
+    networks:
+      - juscash-net
+
+volumes:
+  db_data:
+
+networks:
+  juscash-net:
+    driver: bridge
