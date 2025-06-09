@@ -1,116 +1,119 @@
 # JusCash Case – Automação e Gerenciamento de Publicações do DJE
 
-Este repositório monolito contém três serviços:
+Este repositório monolito integra três serviços principais para automatizar a coleta, gerenciamento e visualização de publicações do Diário da Justiça Eletrônico (DJE) de São Paulo:
 
-- **backend-api**: API em Node.js + Express para gerenciar publicações
-- **juscash-frontend**: SPA React para interface Kanban, login, cadastro e detalhes
-- **tjsp-scraper**: Scraper Python para extrair publicações do DJE e popular o banco
+- **backend-api**: API em Node.js + Express para CRUD, filtros, autenticação e atualização de status das publicações.
+- **juscash-frontend**: SPA React (Vite) com interface Kanban, telas de login/cadastro e modal de detalhes das publicações.
+- **tjsp-scraper**: Scraper em Python com SQLAlchemy para extrair dados do DJE e popular o banco.
 
-Todos os serviços são orquestrados via Docker-Compose junto com um banco PostgreSQL.
+Todos os serviços são orquestrados via Docker Compose junto com um banco PostgreSQL.
 
 ---
 
-## 📂 Estrutura do repositório
+## 📂 Estrutura do Repositório
 
-/ ← raiz do monorepo
-├── backend-api/ # API Node.js + Express
-│ ├── Dockerfile
-│ └── src/… # código-fonte da API
+```text
+/ (raiz)
+├── backend-api/       # API Node.js + Express
+│   ├── Dockerfile     # Imagem Docker da API
+│   ├── .env.example   # Variáveis de ambiente da API
+│   └── src/…          # Código-fonte da API
 │
-├── juscash-frontend/# Frontend React (Vite)
-│ ├── Dockerfile
-│ └── src/… # código-fonte do React
+├── juscash-frontend/  # Frontend React (Vite)
+│   ├── Dockerfile     # Imagem Docker do Frontend
+│   ├── .env.example   # Variáveis de ambiente do Frontend
+│   └── src/…          # Código-fonte do React
 │
-├── tjsp-scraper/ # Scraper Python + SQLAlchemy
-│ ├── Dockerfile
-│ └── src/… # código-fonte do scraper
+├── tjsp-scraper/      # Scraper Python + SQLAlchemy
+│   ├── Dockerfile     # Imagem Docker do Scraper
+│   ├── .env.example   # Variáveis de ambiente do Scraper
+│   └── src/…          # Código-fonte do Scraper
 │
-├── docker-compose.yml # orquestra todos os serviços + Postgres
-├── .gitignore
-└── README.md
-
-yaml
-Copiar
-Editar
+├── docs/              # Documentação em PDF e diagramas
+├── docker-compose.yml # Orquestração de containers
+├── .gitignore         # Regras de ignore globais
+└── README.md          # Este arquivo
+```
 
 ---
 
 ## 🚀 Pré-requisitos
 
-- Docker (>= 20.x)
-- Docker-Compose (>= 1.29.x)
+- **Docker** (>= 20.x)
+- **Docker Compose** (>= 1.29.x)
 
-> **Não é necessário** ter Node, Python ou PostgreSQL instalados localmente — tudo roda em containers.
+> **Não é necessário** ter Node.js, Python ou PostgreSQL instalados localmente; tudo roda em containers.
 
 ---
 
-## ⚙️ Variáveis de ambiente
+## ⚙️ Configuração de Ambiente
 
-Cada serviço carrega um arquivo `.env` em sua pasta. Você pode copiar o `.env.example` correspondente e ajustá-lo:
+Cada serviço possui um arquivo de exemplo de variáveis de ambiente:
 
 ```bash
-# No backend-api/
+# Na raiz do projeto
 cp backend-api/.env.example backend-api/.env
-
-# No juscash-frontend/
 cp juscash-frontend/.env.example juscash-frontend/.env
-
-# No tjsp-scraper/
 cp tjsp-scraper/.env.example tjsp-scraper/.env
-Ajuste as variáveis conforme necessário (ex.: URLs, credenciais, tokens JWT).
-
-▶️ Como rodar em modo desenvolvimento
-No diretório raiz do projeto, execute:
 ```
 
+Edite os `.env` conforme necessário (URLs, credenciais, tokens, etc.).
+
+---
+
+## ▶️ Executando em Desenvolvimento
+
+No diretório raiz, execute:
+
 ```bash
-Copiar
-Editar
 docker-compose up --build
-Isso vai:
-
-Subir o PostgreSQL (porta 5432)
-
-Buildar e rodar a API (porta 8012)
-
-Buildar e rodar o Frontend (porta 5173)
-
-Buildar e rodar o Scraper (roda uma vez e encerra)
-
-A primeira execução do scraper vai popular a base; agendamentos subsequentes (via cron interno) continuarão rodando conforme especificado.
-
-Para parar tudo:
 ```
+
+Este comando irá:
+
+1. Criar um container PostgreSQL (porta **5432**)
+2. Buildar e iniciar a API (porta **8012**)
+3. Buildar e iniciar o Frontend (porta **5173**)
+4. Buildar e executar o Scraper (coleta inicial) e, em seguida, permanece rodando para agendamentos
+
+A primeira execução do scraper popula o banco; coletas seguintes são disparadas automaticamente conforme o cron interno.
+
+Para parar e remover containers:
 
 ```bash
-Copiar
-Editar
 docker-compose down
-🔗 Endpoints principais
-API (Express) em http://localhost:8012
-
-GET /api/publications
-
-PATCH /api/publications/:id/status
-
-Swagger UI: http://localhost:8012/api/docs
-
-Frontend (React) em http://localhost:5173
-
-Login, Cadastro, Kanban e Modal de Detalhes
 ```
 
-📝 Documentação
-Dentro da pasta /docs (ou link no Google Drive), você encontra:
+---
 
-Manual de Produto (PDF)
+## 🔗 Endpoints Principais
 
-Documentação Técnica (PDF):
+### API (Node.js + Express)
 
-OpenAPI/Swagger
+Base URL: `http://localhost:8012`
 
-Diagrama do banco de dados
+- **GET** `/api/publications` — Lista todas as publicações (suporta filtros: processo, data, status)
+- **PATCH** `/api/publications/:id/status` — Atualiza status (`new`, `read`, `sent_adv`, `done`)
+- **Swagger UI**: `http://localhost:8012/api/docs`
 
-Fluxos de scraping e automação
+### Frontend (React)
 
-Instruções de deploy
+Base URL: `http://localhost:5173`
+
+- Tela de Login e Cadastro
+- Kanban para gerenciar publicações por status
+- Modal de detalhes com informações completas de cada publicação
+
+---
+
+## 📝 Documentação
+
+Na pasta `docs/` você encontra:
+
+- **Manual do Produto** (PDF): Visão funcional e fluxo de uso para usuários finais.
+- **Documentação Técnica** (PDF):
+
+  - Especificação OpenAPI/Swagger
+  - Diagrama de banco de dados
+  - Fluxos de scraping e automação
+  - Instruções de deploy
