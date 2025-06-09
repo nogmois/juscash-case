@@ -60,7 +60,13 @@ cd juscash-case
 Todas as variáveis de ambiente estão centralizadas em um único arquivo na raiz do projeto. Crie o `.env` copiando e adequando o exemplo:
 
 ```bash
+# Linux/macOS
+to create the env file
 cp .env.example .env
+
+# Windows CMD
+to create the env file
+copy .env.example .env
 ```
 
 Edite o `.env` para incluir todos os parâmetros necessários:
