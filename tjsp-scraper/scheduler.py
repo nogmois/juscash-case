@@ -14,8 +14,15 @@ logging.basicConfig(
 
 sched = BlockingScheduler(timezone="America/Sao_Paulo")
 
-# agenda o cron diário
-job = sched.add_job(
+# 1) dispara uma vez imediatamente
+logging.info("Executando scrape inicial antes de iniciar o cron…")
+try:
+    scrape_page()
+except Exception as e:
+    logging.error(f"Falha no scrape inicial: {e}")
+
+# 2) agenda o cron diário (para 12:45h todo dia)
+sched.add_job(
     scrape_page,
     trigger="cron",
     hour=12,
@@ -23,9 +30,11 @@ job = sched.add_job(
     start_date=datetime(2025, 3, 17, tzinfo=tz.gettz("America/Sao_Paulo"))
 )
 
-# calcula o próximo run
-next_run = job.trigger.get_next_fire_time(None, datetime.now(tz=tz.gettz("America/Sao_Paulo")))
-print(f"Próxima execução agendada para: {next_run}")
+# mostra o próximo run
+next_run = sched.get_jobs()[0].trigger.get_next_fire_time(
+    None, datetime.now(tz=tz.gettz("America/Sao_Paulo"))
+)
+logging.info(f"Próxima execução agendada para: {next_run}")
 
 if __name__ == "__main__":
     sched.start()

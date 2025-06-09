@@ -214,7 +214,7 @@ def scrape_page():
     hoje = date.today().strftime("%d/%m/%Y")
     search_and_scrape(
         start_date="17/03/2025",
-        end_date="27/03/2025",
+        end_date="20/03/2025",
         caderno=12,
         termos=["RPV", "pagamento pelo INSS"],
         batch_size=50,  # agora salva em lotes de 50

@@ -61,8 +61,9 @@ Ajuste as variáveis conforme necessário (ex.: URLs, credenciais, tokens JWT).
 
 ▶️ Como rodar em modo desenvolvimento
 No diretório raiz do projeto, execute:
+```
 
-bash
+```bash
 Copiar
 Editar
 docker-compose up --build
@@ -79,8 +80,9 @@ Buildar e rodar o Scraper (roda uma vez e encerra)
 A primeira execução do scraper vai popular a base; agendamentos subsequentes (via cron interno) continuarão rodando conforme especificado.
 
 Para parar tudo:
+```
 
-bash
+```bash
 Copiar
 Editar
 docker-compose down
