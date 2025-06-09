@@ -16,23 +16,32 @@ Todos os serviços são orquestrados via Docker Compose junto com um banco Postg
 / (raiz)
 ├── backend-api/       # API Node.js + Express
 │   ├── Dockerfile     # Imagem Docker da API
-│   ├── .env.example   # Variáveis de ambiente da API
 │   └── src/…          # Código-fonte da API
 │
 ├── juscash-frontend/  # Frontend React (Vite)
 │   ├── Dockerfile     # Imagem Docker do Frontend
-│   ├── .env.example   # Variáveis de ambiente do Frontend
 │   └── src/…          # Código-fonte do React
 │
 ├── tjsp-scraper/      # Scraper Python + SQLAlchemy
 │   ├── Dockerfile     # Imagem Docker do Scraper
-│   ├── .env.example   # Variáveis de ambiente do Scraper
 │   └── src/…          # Código-fonte do Scraper
 │
 ├── docs/              # Documentação em PDF e diagramas
 ├── docker-compose.yml # Orquestração de containers
 ├── .gitignore         # Regras de ignore globais
+├── .env.example       # Exemplo de variáveis de ambiente centralizado
 └── README.md          # Este arquivo
+```
+
+---
+
+## 🔧 Clonando o Repositório
+
+Para obter o código localmente:
+
+```bash
+git clone https://github.com/nogmois/juscash-case.git
+cd juscash-case
 ```
 
 ---
@@ -48,16 +57,33 @@ Todos os serviços são orquestrados via Docker Compose junto com um banco Postg
 
 ## ⚙️ Configuração de Ambiente
 
-Cada serviço possui um arquivo de exemplo de variáveis de ambiente:
+Todas as variáveis de ambiente estão centralizadas em um único arquivo na raiz do projeto. Crie o `.env` copiando e adequando o exemplo:
 
 ```bash
-# Na raiz do projeto
-cp backend-api/.env.example backend-api/.env
-cp juscash-frontend/.env.example juscash-frontend/.env
-cp tjsp-scraper/.env.example tjsp-scraper/.env
+cp .env.example .env
 ```
 
-Edite os `.env` conforme necessário (URLs, credenciais, tokens, etc.).
+Edite o `.env` para incluir todos os parâmetros necessários:
+
+```dotenv
+# Banco de Dados (PostgreSQL)
+DB_HOST=db
+DB_PORT=5432
+DB_NAME=juscash_db
+DB_USER=postgres
+DB_PASS=postgres
+
+# JWT
+JWT_SECRET=seu_jwt_secret_aqui
+
+# Frontend
+VITE_API_URL=http://localhost:3000
+
+# Scraper
+DATABASE_URL=postgresql://postgres:postgres@db:5432/juscash_db
+```
+
+O Docker Compose carregará automaticamente este arquivo e injetará as variáveis em cada serviço.
 
 ---
 
